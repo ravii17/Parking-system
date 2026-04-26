@@ -1,0 +1,975 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ParkSmart — Intelligent Parking System</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0a0d14;
+    --bg2: #111520;
+    --bg3: #161b2b;
+    --surface: #1c2236;
+    --surface2: #222840;
+    --accent: #00e5b0;
+    --accent2: #0099ff;
+    --accent3: #ff6b35;
+    --text: #f0f4ff;
+    --text2: #8a94b8;
+    --text3: #545d7a;
+    --border: rgba(255,255,255,0.07);
+    --border2: rgba(0,229,176,0.2);
+    --green: #00e5b0;
+    --red: #ff4d6a;
+    --yellow: #ffd04d;
+    --font-head: 'Syne', sans-serif;
+    --font-body: 'DM Sans', sans-serif;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: var(--font-body);
+    background: var(--bg);
+    color: var(--text);
+    overflow-x: hidden;
+    line-height: 1.6;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 1rem 3rem;
+    background: rgba(10,13,20,0.85);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+  }
+  .logo {
+    font-family: var(--font-head);
+    font-size: 1.4rem; font-weight: 800;
+    color: var(--text);
+    letter-spacing: -0.02em;
+  }
+  .logo span { color: var(--accent); }
+  .nav-links { display: flex; gap: 2rem; list-style: none; }
+  .nav-links a { color: var(--text2); text-decoration: none; font-size: 0.9rem; font-weight: 400; transition: color 0.2s; }
+  .nav-links a:hover { color: var(--text); }
+  .nav-cta {
+    background: var(--accent);
+    color: #000;
+    border: none;
+    padding: 0.55rem 1.4rem;
+    border-radius: 999px;
+    font-family: var(--font-body);
+    font-weight: 500;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: opacity 0.2s, transform 0.15s;
+  }
+  .nav-cta:hover { opacity: 0.9; transform: scale(1.03); }
+
+  /* HERO */
+  .hero {
+    min-height: 100vh;
+    display: flex; align-items: center; justify-content: center;
+    padding: 8rem 2rem 4rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero-grid-bg {
+    position: absolute; inset: 0;
+    background-image:
+      linear-gradient(rgba(0,229,176,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,229,176,0.04) 1px, transparent 1px);
+    background-size: 48px 48px;
+    mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 40%, transparent 100%);
+  }
+  .hero-glow {
+    position: absolute; top: 10%; left: 50%; transform: translateX(-50%);
+    width: 600px; height: 400px;
+    background: radial-gradient(ellipse, rgba(0,229,176,0.12) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .hero-content { text-align: center; position: relative; z-index: 1; max-width: 800px; }
+  .hero-badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: rgba(0,229,176,0.1);
+    border: 1px solid var(--border2);
+    border-radius: 999px;
+    padding: 0.35rem 1rem;
+    font-size: 0.8rem; color: var(--accent);
+    margin-bottom: 2rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    font-weight: 500;
+  }
+  .hero-badge-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--accent);
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(1.4); }
+  }
+  h1 {
+    font-family: var(--font-head);
+    font-size: clamp(2.8rem, 7vw, 5.5rem);
+    font-weight: 800;
+    line-height: 1.05;
+    letter-spacing: -0.03em;
+    margin-bottom: 1.5rem;
+    color: var(--text);
+  }
+  h1 .line2 { color: var(--accent); }
+  .hero-sub {
+    font-size: 1.1rem; color: var(--text2); max-width: 520px; margin: 0 auto 2.5rem;
+    font-weight: 300; line-height: 1.75;
+  }
+  .hero-actions { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+  .btn-primary {
+    background: var(--accent); color: #000;
+    border: none; padding: 0.85rem 2rem;
+    border-radius: 999px; font-family: var(--font-body);
+    font-weight: 500; font-size: 1rem;
+    cursor: pointer; transition: all 0.2s;
+    text-decoration: none; display: inline-block;
+  }
+  .btn-primary:hover { opacity: 0.88; transform: translateY(-2px); }
+  .btn-secondary {
+    background: transparent; color: var(--text);
+    border: 1px solid var(--border);
+    padding: 0.85rem 2rem;
+    border-radius: 999px; font-family: var(--font-body);
+    font-weight: 400; font-size: 1rem;
+    cursor: pointer; transition: all 0.2s;
+    text-decoration: none; display: inline-block;
+  }
+  .btn-secondary:hover { background: var(--surface); border-color: var(--border2); }
+
+  /* STATS STRIP */
+  .stats-strip {
+    display: flex; justify-content: center; flex-wrap: wrap; gap: 0;
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    background: var(--bg2);
+  }
+  .stat-item {
+    flex: 1; min-width: 160px;
+    padding: 2rem 2.5rem;
+    border-right: 1px solid var(--border);
+    text-align: center;
+  }
+  .stat-item:last-child { border-right: none; }
+  .stat-num {
+    font-family: var(--font-head);
+    font-size: 2.2rem; font-weight: 800;
+    color: var(--accent); display: block;
+    letter-spacing: -0.03em;
+  }
+  .stat-label { font-size: 0.82rem; color: var(--text3); text-transform: uppercase; letter-spacing: 0.08em; }
+
+  /* PARKING DASHBOARD */
+  section { padding: 6rem 2rem; }
+  .container { max-width: 1100px; margin: 0 auto; }
+  .section-label {
+    font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.12em;
+    color: var(--accent); font-weight: 500; margin-bottom: 1rem;
+  }
+  h2 {
+    font-family: var(--font-head);
+    font-size: clamp(1.8rem, 4vw, 2.8rem);
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    line-height: 1.15;
+    margin-bottom: 1.2rem;
+  }
+  .section-sub { color: var(--text2); font-size: 1rem; max-width: 500px; line-height: 1.7; margin-bottom: 3rem; }
+
+  /* LIVE DASHBOARD */
+  .dashboard {
+    background: var(--bg2);
+  }
+  .dash-header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 2.5rem; flex-wrap: wrap; gap: 1rem;
+  }
+  .live-indicator {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: rgba(0,229,176,0.08);
+    border: 1px solid var(--border2);
+    padding: 0.4rem 1rem; border-radius: 999px;
+    font-size: 0.8rem; color: var(--accent); font-weight: 500;
+  }
+  .live-dot {
+    width: 7px; height: 7px; border-radius: 50%;
+    background: var(--accent);
+    animation: pulse 1.5s infinite;
+  }
+  .floor-tabs {
+    display: flex; gap: 8px; flex-wrap: wrap;
+  }
+  .floor-tab {
+    background: var(--surface); border: 1px solid var(--border);
+    color: var(--text2); padding: 0.4rem 1rem;
+    border-radius: 999px; font-size: 0.85rem;
+    cursor: pointer; transition: all 0.2s;
+    font-family: var(--font-body);
+  }
+  .floor-tab.active {
+    background: var(--accent); color: #000;
+    border-color: var(--accent); font-weight: 500;
+  }
+
+  .parking-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(72px, 1fr));
+    gap: 8px;
+    margin-bottom: 2rem;
+  }
+  .spot {
+    aspect-ratio: 1;
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.7rem; font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+    font-family: var(--font-head);
+    border: 1.5px solid transparent;
+    flex-direction: column; gap: 3px;
+  }
+  .spot.free {
+    background: rgba(0,229,176,0.1);
+    border-color: rgba(0,229,176,0.25);
+    color: var(--green);
+  }
+  .spot.free:hover {
+    background: rgba(0,229,176,0.2);
+    border-color: var(--accent);
+    transform: scale(1.05);
+  }
+  .spot.occupied {
+    background: rgba(255,77,106,0.1);
+    border-color: rgba(255,77,106,0.2);
+    color: var(--red);
+  }
+  .spot.reserved {
+    background: rgba(255,208,77,0.1);
+    border-color: rgba(255,208,77,0.2);
+    color: var(--yellow);
+  }
+  .spot.selected {
+    background: rgba(0,153,255,0.2) !important;
+    border-color: var(--accent2) !important;
+    color: var(--accent2) !important;
+    transform: scale(1.08);
+  }
+  .spot-icon { font-size: 1.2rem; }
+
+  .legend {
+    display: flex; gap: 2rem; flex-wrap: wrap;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border);
+  }
+  .legend-item {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 0.82rem; color: var(--text2);
+  }
+  .legend-dot {
+    width: 12px; height: 12px; border-radius: 3px;
+  }
+  .dot-free { background: rgba(0,229,176,0.5); }
+  .dot-occ { background: rgba(255,77,106,0.5); }
+  .dot-res { background: rgba(255,208,77,0.5); }
+
+  .dash-summary {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 12px; margin-top: 2rem;
+  }
+  .summary-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 1.2rem 1.5rem;
+  }
+  .summary-card .s-label { font-size: 0.75rem; color: var(--text3); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 0.5rem; }
+  .summary-card .s-val {
+    font-family: var(--font-head);
+    font-size: 1.8rem; font-weight: 700; line-height: 1;
+  }
+  .s-green { color: var(--green); }
+  .s-red { color: var(--red); }
+  .s-yellow { color: var(--yellow); }
+  .s-blue { color: var(--accent2); }
+
+  /* BOOKING PANEL */
+  .booking-panel {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 2rem;
+    margin-top: 2rem;
+    display: none;
+  }
+  .booking-panel.show { display: block; animation: slideIn 0.3s ease; }
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .booking-title {
+    font-family: var(--font-head); font-size: 1.2rem; font-weight: 700;
+    margin-bottom: 1.5rem; color: var(--text);
+  }
+  .booking-title span { color: var(--accent); }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem; }
+  .form-group { display: flex; flex-direction: column; gap: 6px; }
+  .form-group label { font-size: 0.8rem; color: var(--text2); text-transform: uppercase; letter-spacing: 0.07em; }
+  .form-group input, .form-group select {
+    background: var(--bg2); border: 1px solid var(--border);
+    color: var(--text); padding: 0.65rem 1rem;
+    border-radius: 10px; font-family: var(--font-body); font-size: 0.95rem;
+    outline: none; transition: border-color 0.2s;
+  }
+  .form-group input:focus, .form-group select:focus { border-color: var(--accent); }
+  .form-group select option { background: var(--bg2); }
+  .confirm-btn {
+    background: var(--accent); color: #000; border: none;
+    padding: 0.85rem 2rem; border-radius: 999px;
+    font-family: var(--font-body); font-size: 1rem; font-weight: 500;
+    cursor: pointer; margin-top: 1rem; transition: all 0.2s; width: 100%;
+  }
+  .confirm-btn:hover { opacity: 0.88; }
+  .booking-msg {
+    display: none; background: rgba(0,229,176,0.1);
+    border: 1px solid var(--border2);
+    border-radius: 12px; padding: 1rem 1.5rem;
+    margin-top: 1rem; color: var(--accent);
+    font-size: 0.95rem;
+  }
+  .booking-msg.show { display: block; animation: slideIn 0.3s ease; }
+
+  /* FEATURES */
+  .features-bg { background: var(--bg); }
+  .features-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5px;
+    border: 1.5px solid var(--border);
+    border-radius: 20px;
+    overflow: hidden;
+  }
+  .feature-card {
+    background: var(--bg2);
+    padding: 2.5rem;
+    transition: background 0.2s;
+    position: relative;
+  }
+  .feature-card:hover { background: var(--surface); }
+  .feat-icon {
+    width: 48px; height: 48px; border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.4rem; margin-bottom: 1.5rem;
+  }
+  .icon-green { background: rgba(0,229,176,0.12); }
+  .icon-blue { background: rgba(0,153,255,0.12); }
+  .icon-orange { background: rgba(255,107,53,0.12); }
+  .icon-yellow { background: rgba(255,208,77,0.12); }
+  .icon-purple { background: rgba(148,108,255,0.12); }
+  .icon-red { background: rgba(255,77,106,0.12); }
+  .feature-card h3 {
+    font-family: var(--font-head); font-size: 1.1rem; font-weight: 700;
+    margin-bottom: 0.75rem; color: var(--text);
+  }
+  .feature-card p { font-size: 0.9rem; color: var(--text2); line-height: 1.7; }
+
+  /* HOW IT WORKS */
+  .how-bg { background: var(--bg2); }
+  .steps {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 2rem; position: relative;
+  }
+  .step {
+    text-align: center; padding: 2rem 1.5rem;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 20px; position: relative;
+  }
+  .step-num {
+    width: 52px; height: 52px; border-radius: 50%;
+    border: 2px solid var(--accent);
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 1.5rem;
+    font-family: var(--font-head); font-size: 1.2rem; font-weight: 800;
+    color: var(--accent);
+  }
+  .step h3 { font-family: var(--font-head); font-size: 1rem; font-weight: 700; margin-bottom: 0.6rem; }
+  .step p { font-size: 0.85rem; color: var(--text2); line-height: 1.7; }
+
+  /* PRICING */
+  .pricing-bg { background: var(--bg); }
+  .pricing-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 1.5rem;
+  }
+  .price-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px; padding: 2rem;
+    position: relative; transition: border-color 0.2s;
+  }
+  .price-card.popular {
+    border-color: var(--accent);
+    background: rgba(0,229,176,0.05);
+  }
+  .popular-badge {
+    position: absolute; top: -13px; left: 50%; transform: translateX(-50%);
+    background: var(--accent); color: #000;
+    font-size: 0.72rem; font-weight: 600; text-transform: uppercase;
+    letter-spacing: 0.1em;
+    padding: 4px 14px; border-radius: 999px;
+    white-space: nowrap;
+  }
+  .price-type {
+    font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em;
+    color: var(--text3); margin-bottom: 1rem;
+  }
+  .price-amount {
+    font-family: var(--font-head); font-size: 2.8rem; font-weight: 800;
+    color: var(--text); line-height: 1; margin-bottom: 0.3rem;
+  }
+  .price-amount span { font-size: 1.2rem; color: var(--text2); font-weight: 400; }
+  .price-desc { font-size: 0.85rem; color: var(--text2); margin-bottom: 1.8rem; }
+  .price-features { list-style: none; }
+  .price-features li {
+    font-size: 0.88rem; color: var(--text2);
+    padding: 0.6rem 0; border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; gap: 10px;
+  }
+  .price-features li:last-child { border-bottom: none; }
+  .check { color: var(--accent); font-size: 1rem; }
+  .price-btn {
+    margin-top: 2rem; width: 100%;
+    background: transparent; border: 1px solid var(--border);
+    color: var(--text); padding: 0.8rem;
+    border-radius: 999px; font-family: var(--font-body);
+    font-size: 0.95rem; cursor: pointer; transition: all 0.2s;
+  }
+  .price-btn:hover { background: var(--surface2); border-color: var(--text3); }
+  .price-card.popular .price-btn {
+    background: var(--accent); color: #000;
+    border-color: var(--accent); font-weight: 500;
+  }
+  .price-card.popular .price-btn:hover { opacity: 0.88; }
+
+  /* CONTACT */
+  .contact-bg { background: var(--bg2); }
+  .contact-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 4rem;
+    align-items: start;
+  }
+  @media (max-width: 700px) { .contact-grid { grid-template-columns: 1fr; } }
+  .contact-info p { color: var(--text2); line-height: 1.75; margin-bottom: 2rem; }
+  .contact-detail {
+    display: flex; align-items: center; gap: 12px;
+    padding: 1rem 0; border-bottom: 1px solid var(--border);
+    font-size: 0.9rem;
+  }
+  .contact-detail:last-child { border-bottom: none; }
+  .cd-icon {
+    width: 36px; height: 36px; border-radius: 9px;
+    background: var(--surface); border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center; font-size: 1rem;
+    flex-shrink: 0;
+  }
+  .cd-text { color: var(--text); }
+  .cd-sub { font-size: 0.78rem; color: var(--text3); }
+  .contact-form { display: flex; flex-direction: column; gap: 1rem; }
+  .contact-form input, .contact-form textarea {
+    background: var(--surface); border: 1px solid var(--border);
+    color: var(--text); padding: 0.85rem 1.2rem;
+    border-radius: 12px; font-family: var(--font-body); font-size: 0.95rem;
+    outline: none; transition: border-color 0.2s; resize: none;
+  }
+  .contact-form input:focus, .contact-form textarea:focus { border-color: var(--accent); }
+  .contact-form textarea { min-height: 130px; }
+  .send-btn {
+    background: var(--accent); color: #000; border: none;
+    padding: 0.9rem 2.5rem; border-radius: 999px;
+    font-family: var(--font-body); font-size: 1rem; font-weight: 500;
+    cursor: pointer; align-self: flex-start; transition: all 0.2s;
+  }
+  .send-btn:hover { opacity: 0.88; transform: translateY(-2px); }
+
+  /* FOOTER */
+  footer {
+    background: var(--bg);
+    border-top: 1px solid var(--border);
+    padding: 3rem 2rem;
+    display: flex; justify-content: center; align-items: center;
+    flex-direction: column; gap: 1rem; text-align: center;
+  }
+  .footer-logo {
+    font-family: var(--font-head); font-size: 1.5rem; font-weight: 800;
+    color: var(--text); letter-spacing: -0.03em;
+  }
+  .footer-logo span { color: var(--accent); }
+  footer p { font-size: 0.82rem; color: var(--text3); }
+
+  /* ANIM */
+  .fade-in { opacity: 0; transform: translateY(24px); transition: opacity 0.7s, transform 0.7s; }
+  .fade-in.visible { opacity: 1; transform: none; }
+
+  @media (max-width: 768px) {
+    nav { padding: 1rem 1.5rem; }
+    .nav-links { display: none; }
+    .form-row { grid-template-columns: 1fr; }
+    .contact-grid { grid-template-columns: 1fr; }
+    .stat-item { min-width: 140px; padding: 1.5rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="logo">Park<span>Smart</span></div>
+  <ul class="nav-links">
+    <li><a href="#dashboard">Live View</a></li>
+    <li><a href="#features">Features</a></li>
+    <li><a href="#how">How It Works</a></li>
+    <li><a href="#pricing">Pricing</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+  <button class="nav-cta" onclick="document.getElementById('dashboard').scrollIntoView({behavior:'smooth'})">Book a Spot</button>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-grid-bg"></div>
+  <div class="hero-glow"></div>
+  <div class="hero-content">
+    <div class="hero-badge">
+      <div class="hero-badge-dot"></div>
+      Now Live — Real-Time Availability
+    </div>
+    <h1>
+      Smarter Parking,<br>
+      <span class="line2">Zero Frustration.</span>
+    </h1>
+    <p class="hero-sub">
+      Find, reserve, and navigate to your parking spot in seconds. Our AI-powered system monitors all bays in real time so you never circle the lot again.
+    </p>
+    <div class="hero-actions">
+      <a href="#dashboard" class="btn-primary">View Live Spots</a>
+      <a href="#how" class="btn-secondary">See How It Works</a>
+    </div>
+  </div>
+</section>
+
+<!-- STATS -->
+<div class="stats-strip">
+  <div class="stat-item">
+    <span class="stat-num">48</span>
+    <span class="stat-label">Total Spots</span>
+  </div>
+  <div class="stat-item">
+    <span class="stat-num" id="stat-free">28</span>
+    <span class="stat-label">Available Now</span>
+  </div>
+  <div class="stat-item">
+    <span class="stat-num">3</span>
+    <span class="stat-label">Floors</span>
+  </div>
+  <div class="stat-item">
+    <span class="stat-num">99.8%</span>
+    <span class="stat-label">Uptime</span>
+  </div>
+  <div class="stat-item">
+    <span class="stat-num">&lt;2min</span>
+    <span class="stat-label">Avg Find Time</span>
+  </div>
+</div>
+
+<!-- LIVE DASHBOARD -->
+<section class="dashboard" id="dashboard">
+  <div class="container">
+    <div class="dash-header fade-in">
+      <div>
+        <p class="section-label">Live Parking Map</p>
+        <h2>Select Your Spot</h2>
+      </div>
+      <div class="live-indicator">
+        <div class="live-dot"></div>
+        Live — Updates every 30s
+      </div>
+    </div>
+
+    <div class="floor-tabs fade-in" id="floorTabs">
+      <button class="floor-tab active" onclick="showFloor(0, this)">Floor 1</button>
+      <button class="floor-tab" onclick="showFloor(1, this)">Floor 2</button>
+      <button class="floor-tab" onclick="showFloor(2, this)">Floor 3</button>
+    </div>
+
+    <div class="parking-grid fade-in" id="parkingGrid"></div>
+
+    <div class="legend fade-in">
+      <div class="legend-item"><div class="legend-dot dot-free"></div> Available</div>
+      <div class="legend-item"><div class="legend-dot dot-occ"></div> Occupied</div>
+      <div class="legend-item"><div class="legend-dot dot-res"></div> Reserved</div>
+    </div>
+
+    <div class="dash-summary fade-in">
+      <div class="summary-card">
+        <div class="s-label">Available</div>
+        <div class="s-val s-green" id="cnt-free">—</div>
+      </div>
+      <div class="summary-card">
+        <div class="s-label">Occupied</div>
+        <div class="s-val s-red" id="cnt-occ">—</div>
+      </div>
+      <div class="summary-card">
+        <div class="s-label">Reserved</div>
+        <div class="s-val s-yellow" id="cnt-res">—</div>
+      </div>
+      <div class="summary-card">
+        <div class="s-label">Selected Spot</div>
+        <div class="s-val s-blue" id="cnt-sel">None</div>
+      </div>
+    </div>
+
+    <div class="booking-panel" id="bookingPanel">
+      <div class="booking-title">Reserve Spot <span id="bookingSpotLabel"></span></div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Full Name</label>
+          <input type="text" placeholder="e.g. Rohan Sharma">
+        </div>
+        <div class="form-group">
+          <label>Vehicle Number</label>
+          <input type="text" placeholder="e.g. BR01AB1234">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Date</label>
+          <input type="date" id="bookDate">
+        </div>
+        <div class="form-group">
+          <label>Duration</label>
+          <select>
+            <option>1 hour</option>
+            <option>2 hours</option>
+            <option>3 hours</option>
+            <option>Half day (6h)</option>
+            <option>Full day (12h)</option>
+          </select>
+        </div>
+      </div>
+      <button class="confirm-btn" onclick="confirmBooking()">Confirm Reservation →</button>
+      <div class="booking-msg" id="bookingMsg"></div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section class="features-bg" id="features">
+  <div class="container">
+    <p class="section-label fade-in">What We Offer</p>
+    <h2 class="fade-in">Packed with intelligence.</h2>
+    <p class="section-sub fade-in">Every part of ParkSmart is built to make parking seamless — from entry to exit.</p>
+    <div class="features-grid fade-in">
+      <div class="feature-card">
+        <div class="feat-icon icon-green">🔍</div>
+        <h3>Real-Time Sensor Grid</h3>
+        <p>IoT ultrasonic sensors in every bay transmit live occupancy data every 5 seconds, ensuring accuracy you can trust.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feat-icon icon-blue">📱</div>
+        <h3>Mobile Reservations</h3>
+        <p>Book your spot up to 48 hours in advance from any device. Receive an instant QR code for seamless gate entry.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feat-icon icon-orange">🚧</div>
+        <h3>Smart Entry Gates</h3>
+        <p>ANPR (automatic number plate recognition) cameras open gates automatically when your vehicle is detected.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feat-icon icon-yellow">💡</div>
+        <h3>LED Guidance System</h3>
+        <p>Green/red LED indicators above each bay guide drivers directly to the nearest available spot instantly.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feat-icon icon-purple">📊</div>
+        <h3>Analytics Dashboard</h3>
+        <p>Owners get a full admin portal with occupancy heatmaps, peak-hour trends, and revenue reports.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feat-icon icon-red">🔔</div>
+        <h3>Alerts & Overstay Detection</h3>
+        <p>Automatic SMS alerts for reservation expiry and overstay penalties. Never let a spot be blocked for too long.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="how-bg" id="how">
+  <div class="container">
+    <p class="section-label fade-in">Simple Process</p>
+    <h2 class="fade-in">Park in 4 easy steps.</h2>
+    <p class="section-sub fade-in">No app download needed. Works directly in your browser.</p>
+    <div class="steps fade-in">
+      <div class="step">
+        <div class="step-num">1</div>
+        <h3>Check Availability</h3>
+        <p>View the live parking map to see which spots are free on your desired floor.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <h3>Select & Reserve</h3>
+        <p>Click any green spot, fill in your details, and confirm your booking instantly.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <h3>Arrive & Enter</h3>
+        <p>Show your QR code or let ANPR detect your plate. The gate opens automatically.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <h3>Park & Pay</h3>
+        <p>Follow the LED indicators to your spot. Pay on exit via card, UPI, or monthly plan.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section class="pricing-bg" id="pricing">
+  <div class="container">
+    <p class="section-label fade-in">Transparent Rates</p>
+    <h2 class="fade-in">Simple, fair pricing.</h2>
+    <p class="section-sub fade-in">No hidden charges. Pay only for what you use.</p>
+    <div class="pricing-grid fade-in">
+      <div class="price-card">
+        <div class="price-type">Hourly</div>
+        <div class="price-amount">₹30<span>/hr</span></div>
+        <div class="price-desc">Perfect for quick visits and errands.</div>
+        <ul class="price-features">
+          <li><span class="check">✓</span> Real-time spot selection</li>
+          <li><span class="check">✓</span> QR code entry</li>
+          <li><span class="check">✓</span> SMS confirmation</li>
+          <li><span class="check">✓</span> Pay on exit</li>
+        </ul>
+        <button class="price-btn" onclick="document.getElementById('dashboard').scrollIntoView({behavior:'smooth'})">Book Now</button>
+      </div>
+      <div class="price-card popular">
+        <div class="popular-badge">Most Popular</div>
+        <div class="price-type">Daily Pass</div>
+        <div class="price-amount">₹150<span>/day</span></div>
+        <div class="price-desc">Best value for a full workday stay.</div>
+        <ul class="price-features">
+          <li><span class="check">✓</span> Up to 12 hours</li>
+          <li><span class="check">✓</span> Reserved spot</li>
+          <li><span class="check">✓</span> Priority allocation</li>
+          <li><span class="check">✓</span> Free cancellation (2h before)</li>
+        </ul>
+        <button class="price-btn" onclick="document.getElementById('dashboard').scrollIntoView({behavior:'smooth'})">Book Now</button>
+      </div>
+      <div class="price-card">
+        <div class="price-type">Monthly</div>
+        <div class="price-amount">₹2,500<span>/mo</span></div>
+        <div class="price-desc">Dedicated spot for regular commuters.</div>
+        <ul class="price-features">
+          <li><span class="check">✓</span> Fixed dedicated bay</li>
+          <li><span class="check">✓</span> Unlimited in/out</li>
+          <li><span class="check">✓</span> ANPR auto-entry</li>
+          <li><span class="check">✓</span> Priority support</li>
+        </ul>
+        <button class="price-btn" onclick="document.getElementById('contact').scrollIntoView({behavior:'smooth'})">Contact Us</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section class="contact-bg" id="contact">
+  <div class="container">
+    <p class="section-label fade-in">Get In Touch</p>
+    <h2 class="fade-in">We're here to help.</h2>
+    <div class="contact-grid fade-in">
+      <div class="contact-info">
+        <p>Questions about subscriptions, technical issues, or want to install ParkSmart at your facility? Our team is ready.</p>
+        <div class="contact-detail">
+          <div class="cd-icon">📍</div>
+          <div>
+            <div class="cd-text">ParkSmart Lot, Station Road</div>
+            <div class="cd-sub">Purnia, Bihar — 854301</div>
+          </div>
+        </div>
+        <div class="contact-detail">
+          <div class="cd-icon">📞</div>
+          <div>
+            <div class="cd-text">+91 98765 43210</div>
+            <div class="cd-sub">Mon–Sat, 8am–8pm</div>
+          </div>
+        </div>
+        <div class="contact-detail">
+          <div class="cd-icon">✉️</div>
+          <div>
+            <div class="cd-text">hello@parksmart.in</div>
+            <div class="cd-sub">Usually replies within 2 hours</div>
+          </div>
+        </div>
+      </div>
+      <form class="contact-form" onsubmit="handleContact(event)">
+        <input type="text" placeholder="Your name" required>
+        <input type="email" placeholder="Email address" required>
+        <textarea placeholder="How can we help you?" required></textarea>
+        <button type="submit" class="send-btn">Send Message →</button>
+        <div id="contactMsg" style="display:none; color:var(--accent); font-size:0.9rem; padding:0.5rem 0;">
+          ✓ Message sent! We'll get back to you shortly.
+        </div>
+      </form>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">Park<span>Smart</span></div>
+  <p>© 2025 ParkSmart. All rights reserved. Built for smarter cities.</p>
+</footer>
+
+<script>
+  // Floor data — 16 spots per floor
+  const floors = [
+    // Floor 1
+    [
+      'free','free','occupied','free','free','reserved','free','occupied',
+      'free','occupied','free','free','occupied','free','free','free'
+    ],
+    // Floor 2
+    [
+      'occupied','free','free','free','occupied','occupied','free','free',
+      'reserved','free','occupied','free','free','free','reserved','occupied'
+    ],
+    // Floor 3
+    [
+      'free','reserved','free','occupied','free','free','occupied','free',
+      'free','free','occupied','reserved','free','free','free','occupied'
+    ]
+  ];
+
+  let currentFloor = 0;
+  let selectedSpot = null;
+
+  const icons = { free: '🟢', occupied: '🔴', reserved: '🟡' };
+  const labels = { free: 'Free', occupied: 'In Use', reserved: 'Reserved' };
+
+  function showFloor(idx, btn) {
+    currentFloor = idx;
+    selectedSpot = null;
+    document.getElementById('cnt-sel').textContent = 'None';
+    document.getElementById('bookingPanel').classList.remove('show');
+    document.querySelectorAll('.floor-tab').forEach(t => t.classList.remove('active'));
+    btn.classList.add('active');
+    renderGrid();
+  }
+
+  function renderGrid() {
+    const grid = document.getElementById('parkingGrid');
+    grid.innerHTML = '';
+    const data = floors[currentFloor];
+    let free = 0, occ = 0, res = 0;
+
+    data.forEach((state, i) => {
+      const spotId = `F${currentFloor+1}-${String(i+1).padStart(2,'0')}`;
+      const el = document.createElement('div');
+      el.className = `spot ${state}`;
+      if (selectedSpot === spotId) el.classList.add('selected');
+      el.innerHTML = `<span class="spot-icon">${icons[state]}</span><span>${spotId}</span>`;
+      if (state === 'free') {
+        el.onclick = () => selectSpot(spotId, i, el);
+        free++;
+      } else if (state === 'occupied') occ++;
+      else res++;
+      grid.appendChild(el);
+    });
+
+    document.getElementById('cnt-free').textContent = free;
+    document.getElementById('cnt-occ').textContent = occ;
+    document.getElementById('cnt-res').textContent = res;
+    document.getElementById('stat-free').textContent = floors.flat().filter(s => s === 'free').length;
+  }
+
+  function selectSpot(id, idx, el) {
+    document.querySelectorAll('.spot').forEach(s => s.classList.remove('selected'));
+    el.classList.add('selected');
+    selectedSpot = id;
+    document.getElementById('cnt-sel').textContent = id;
+    document.getElementById('bookingSpotLabel').textContent = id;
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('bookDate').value = today;
+    document.getElementById('bookingPanel').classList.add('show');
+    document.getElementById('bookingMsg').classList.remove('show');
+    document.getElementById('bookingPanel').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+
+  function confirmBooking() {
+    const panel = document.getElementById('bookingPanel');
+    const inputs = panel.querySelectorAll('input');
+    let ok = true;
+    inputs.forEach(i => { if (!i.value) { ok = false; i.style.borderColor = 'var(--red)'; } else { i.style.borderColor = ''; } });
+    if (!ok) return;
+
+    // Mark spot as reserved
+    floors[currentFloor][parseInt(selectedSpot.split('-')[1]) - 1] = 'reserved';
+    renderGrid();
+
+    const msg = document.getElementById('bookingMsg');
+    msg.textContent = `✓ Spot ${selectedSpot} reserved! Your QR code has been sent via SMS.`;
+    msg.classList.add('show');
+    document.getElementById('cnt-sel').textContent = 'None';
+    selectedSpot = null;
+
+    setTimeout(() => {
+      document.getElementById('bookingPanel').classList.remove('show');
+      msg.classList.remove('show');
+    }, 4000);
+  }
+
+  function handleContact(e) {
+    e.preventDefault();
+    document.getElementById('contactMsg').style.display = 'block';
+    e.target.reset();
+    setTimeout(() => { document.getElementById('contactMsg').style.display = 'none'; }, 4000);
+  }
+
+  // Scroll animations
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+  }, { threshold: 0.1 });
+  document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+
+  renderGrid();
+
+  // Simulate live updates
+  setInterval(() => {
+    floors.forEach(floor => {
+      const idx = Math.floor(Math.random() * floor.length);
+      if (floor[idx] !== 'reserved') {
+        floor[idx] = floor[idx] === 'free' ? 'occupied' : 'free';
+      }
+    });
+    if (!selectedSpot) renderGrid();
+    else {
+      document.getElementById('stat-free').textContent = floors.flat().filter(s => s === 'free').length;
+    }
+  }, 8000);
+</script>
+</body>
+</html>
